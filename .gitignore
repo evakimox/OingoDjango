@@ -1,2 +1,6 @@
 oingo/oingo/keys.py
 .idea/
+
+*.pyc
+
+oingo/.idea/workspace.xml
