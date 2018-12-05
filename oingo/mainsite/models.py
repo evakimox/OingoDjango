@@ -8,24 +8,24 @@ class Note(models.Model):
     lat = models.DecimalField(max_digits=14, decimal_places=10)
     lng = models.DecimalField(max_digits=14, decimal_places=10)
     radius = models.FloatField()
-    starttime = models.TimeField()
-    endtime = models.TimeField()
+    starttime = models.DateTimeField()
+    endtime = models.DateTimeField()
     scheduletype = models.IntegerField()
     visibility = models.IntegerField()
-    createtime = models.TimeField()
+    createtime = models.DateTimeField()
 
 
 class Friend(models.Model):
     friender = models.IntegerField()
     friendee = models.IntegerField()
     comfirmed = models.BooleanField()
-    createtime = models.TimeField()
+    createtime = models.DateTimeField()
 
 
 class Comment(models.Model):
     cid = models.AutoField(primary_key=True)
     ctext = models.CharField(max_length=500)
-    createtime = models.TimeField()
+    createtime = models.DateTimeField()
     nid = models.IntegerField()
     uid = models.IntegerField()
 
@@ -48,7 +48,7 @@ class State(models.Model):
 
 class Location(models.Model):
     uid = models.IntegerField()
-    ltime = models.TimeField()
+    ltime = models.DateTimeField()
     lat = models.DecimalField(max_digits=14, decimal_places=10)
     lng = models.DecimalField(max_digits=14, decimal_places=10)
     sid = models.IntegerField()
@@ -60,8 +60,8 @@ class Filter(models.Model):
     lat = models.DecimalField(max_digits=14, decimal_places=10)
     lng = models.DecimalField(max_digits=14, decimal_places=10)
     radius = models.FloatField()
-    starttime = models.TimeField()
-    endtime = models.TimeField()
+    starttime = models.DateTimeField()
+    endtime = models.DateTimeField()
     onfriend = models.IntegerField()
     tid = models.IntegerField()
     sid = models.IntegerField()

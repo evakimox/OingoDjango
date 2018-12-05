@@ -16,20 +16,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-import mainsite.views
+from mainsite import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    '''
-    path('/', ),
-    path('register/', ),
-    path('note/<int:noteid>', ),
-    path('friendlist/', ),
-    path('friendrequest/', ),
-    path('createnote/', ),
-    path('filtersettings/', ),
-    '''
+
+    path('/', views.index),
+    path('register/', views.register),
+    path('note/<int:noteid>', views.note),
+    path('friend/list/', views.friendlist),
+    path('friend/request/', views.friendrequest),
+    path('note/create', views.createnote),
+    path('filter/list/', views.filterlist),
+    path('filter/create/', views.filtercreate),
+    path('filter/settings/<int:fid>', views.filtersettings),
+
 
 
 
