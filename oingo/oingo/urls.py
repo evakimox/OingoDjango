@@ -22,8 +22,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
 
-    path('/', views.index),
+    path('', views.index),
     path('register/', views.register),
+    path('register/success/', views.registerSuccess),
+    path('login/', views.login),
     path('note/<int:noteid>', views.note),
     path('friend/list/', views.friendlist),
     path('friend/request/', views.friendrequest),
