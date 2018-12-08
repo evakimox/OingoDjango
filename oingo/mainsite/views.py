@@ -35,6 +35,7 @@ def register(request):
             else:
                 try:
                     User.objects.get(username=username)
+                    errMsgUsername = 'Username already exists'
                 except User.DoesNotExist:
                     if password == '':
                         errMsgPassword = 'Empty Password'
@@ -46,22 +47,40 @@ def register(request):
 
 
 def login(request):
-    '''
+    errMsgUsername = ''
+    errMsgPassword = ''
+    username = ''
+    password = ''
     if request.method == 'GET':
-        form = LoginForm
-    elif request.method == 'POST':
+        if request.session['id'] > 0:
+            return HttpResponseRedirect('/')
+        else:
+            return render(request, 'login.html', {'username': username, 'errMsgUsername': errMsgUsername, 'errMsgPassword':errMsgPassword})
+    elif request.method == 'POsT':
         form = LoginForm(request.POST)
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-            if user:
-                login(request, user)
-                return redirect(to='index')
+            if username == '':
+                errMsgUsername = 'Pleas enter your username'
             else:
-                return HttpResponse("Not a user")
+                try:
+                    User.objects.get(username=username)
+                except User.DoesNotExist:
+                    errMsgUsername = 'Invalid username'
+                # else:
 
-    '''
+
+
+
+
+
+
+
+
+
+
+
 
     return HttpResponse("login")
 
