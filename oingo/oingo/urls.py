@@ -26,6 +26,8 @@ urlpatterns = [
     path('register/', views.register),
     path('register/success/', views.registerSuccess),
     path('login/', views.login),
+    path('login/success/', views.loginSuccess),
+    path('logout/', views.logout),
     path('note/<int:noteid>', views.note),
     path('friend/list/', views.friendlist),
     path('friend/request/', views.friendrequest),

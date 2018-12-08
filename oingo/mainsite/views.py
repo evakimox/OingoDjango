@@ -3,7 +3,7 @@ from django.shortcuts import render, HttpResponse, render_to_response, HttpRespo
 from mainsite.models import *
 
 
-from django.contrib.auth import *
+import django.contrib.auth as auth
 from django.contrib.auth.models import User
 
 from .form import *
@@ -23,7 +23,12 @@ def register(request):
     errMsgPassword = ''
     username = ''
     password = ''
-    if request.method == 'POST':
+    if request.method == 'GET':
+        if loginStatus(request) is not None:   # already logged in?
+            return HttpResponseRedirect('/')
+        else:
+            return render(request, 'register.html', {'username': username, 'errMsgUsername': errMsgUsername, 'errMsgPassword':errMsgPassword})
+    elif request.method == 'POST':
         form = RegisterForm(request.POST)
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -42,8 +47,13 @@ def register(request):
                     else:
                         user = User.objects.create_user(username, '', password)
                         user.save()
+                        user = auth.authenticate(username=username, password=password)
                         return HttpResponseRedirect('/register/success/')
     return render(request, 'register.html', {'username': username, 'errMsgUsername': errMsgUsername, 'errMsgPassword':errMsgPassword})
+
+
+def loginSuccess(request):
+    return HttpResponse("login success")
 
 
 def login(request):
@@ -52,11 +62,11 @@ def login(request):
     username = ''
     password = ''
     if request.method == 'GET':
-        if request.session['id'] > 0:
+        if loginStatus(request) is not None:   # already logged in?
             return HttpResponseRedirect('/')
         else:
             return render(request, 'login.html', {'username': username, 'errMsgUsername': errMsgUsername, 'errMsgPassword':errMsgPassword})
-    elif request.method == 'POsT':
+    elif request.method == 'POST':
         form = LoginForm(request.POST)
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -68,21 +78,29 @@ def login(request):
                     User.objects.get(username=username)
                 except User.DoesNotExist:
                     errMsgUsername = 'Invalid username'
-                # else:
+                else:
+                    user = auth.authenticate(username=username, password=password)
+                    if user is not None and user.is_active:
+                        auth.login(request, user)
+                        return HttpResponseRedirect('/login/success/')
+                    elif user is not None and not user.is_active:
+                        errMsgPassword = 'Not an active user!'
+                    else:
+                        errMsgPassword = 'Wrong password'
+    return render(request, 'login.html', {'username': username, 'errMsgUsername': errMsgUsername, 'errMsgPassword':errMsgPassword})
+
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect('/')
 
 
 
-
-
-
-
-
-
-
-
-
-
-    return HttpResponse("login")
+def loginStatus(request):
+    if request.user.is_authenticated and request.user.is_active:
+        return request.user
+    else:
+        return None
 
 
 
