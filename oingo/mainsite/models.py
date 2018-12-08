@@ -17,8 +17,8 @@ class Note(models.Model):
 
 
 class Friend(models.Model):
-    friender = models.IntegerField()
-    friendee = models.IntegerField()
+    friender = models.ForeignKey(User, related_name='ufriender', on_delete=models.CASCADE)
+    friendee = models.ForeignKey(User, related_name='ufriendee', on_delete=models.CASCADE)
     confirmed = models.BooleanField()
     createtime = models.DateTimeField()
 

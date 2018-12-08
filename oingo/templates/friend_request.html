@@ -6,5 +6,23 @@
 </head>
 <body>
 
+<h1>Have Sent Requests to: </h1>
+<form action="/account/friend/request/" method="post">
+    {% csrf_token %}
+    {% for friend in requester_user_friend_list %}
+        <label>{{ friend.username }}</label>
+    {% endfor %}
+</form>
+
+
+<h1>Received Requests from: </h1>
+<form action="/account/friend/request/" method="post">
+    {% csrf_token %}
+    {% for friend in requestee_user_friend_list %}
+        <label>{{ friend.username }}</label>
+        <input type="submit" name="{{ friend.id }}" value="Confirm" />
+    {% endfor %}
+</form>
+
 </body>
 </html>

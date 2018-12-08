@@ -6,5 +6,9 @@
 </head>
 <body>
 
+    {% for friend in user_friend_list %}
+        <label>{{ friend.username }}</label>
+    {% endfor %}
+
 </body>
 </html>

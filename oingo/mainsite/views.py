@@ -5,8 +5,11 @@ from mainsite.models import *
 from django.utils import timezone
 import django.contrib.auth as auth
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from .form import *
+
+import itertools
 
 
 def index(request):
@@ -191,40 +194,62 @@ def account_settings(request):
     user = login_status(request)
     if user is None:
         return HttpResponseRedirect('/')
-    else:
-        err_msg_password = ''
-        last_password = ''
-        new_password = ''
-        if request.method == 'GET':
-            return render(request, 'account_settings.html', {'errMsgPassword': err_msg_password})
-        elif request.method == 'POST':
-            form = PasswordForm(request.POST)
-            last_password = request.POST.get('last_password')
-            new_password = request.POST.get('new_password')
-            if form.is_valid():
-                if last_password == '':
-                    err_msg_password = 'Pleas enter your original password'
-                else:
-                    if new_password == '':
-                        err_msg_password = 'Please enter your new password'
-                    else:
-                        user = auth.authenticate(username=user.username, password=last_password)
-                        if user is None:
-                            err_msg_password = 'Invalid original password!'
-                        else:
-                            user.set_password(new_password)
-                            user.save()
-                            auth.login(request, user)
-                            err_msg_password = 'Successfully Changed Password!'
+    err_msg_password = ''
+    last_password = ''
+    new_password = ''
+    if request.method == 'GET':
         return render(request, 'account_settings.html', {'errMsgPassword': err_msg_password})
+    elif request.method == 'POST':
+        form = PasswordForm(request.POST)
+        last_password = request.POST.get('last_password')
+        new_password = request.POST.get('new_password')
+        if form.is_valid():
+            if last_password == '':
+                err_msg_password = 'Pleas enter your original password'
+            else:
+                if new_password == '':
+                    err_msg_password = 'Please enter your new password'
+                else:
+                    user = auth.authenticate(username=user.username, password=last_password)
+                    if user is None:
+                        err_msg_password = 'Invalid original password!'
+                    else:
+                        user.set_password(new_password)
+                        user.save()
+                        auth.login(request, user)
+                        err_msg_password = 'Successfully Changed Password!'
+    return render(request, 'account_settings.html', {'errMsgPassword': err_msg_password})
 
 
 def friend_list(request):
-    return HttpResponse("friendlist")
+    user = login_status(request)
+    if user is None:
+        return HttpResponseRedirect('/account/login/')
+    user_friend_list = itertools.chain(
+        User.objects.filter(Q(ufriender__confirmed=True), Q(ufriender__friendee=user.id)),
+        User.objects.filter(Q(ufriendee__confirmed=True), Q(ufriendee__friender=user.id))
+    )
+    return render(request, 'friend_list.html', {'user_friend_list': user_friend_list})
 
 
 def friend_request(request):
-    return HttpResponse("friendrequest")
+    user = login_status(request)
+    if user is None:
+        return HttpResponseRedirect('/account/login/')
+    if request.method == 'GET':
+        requester_user_friend_list = User.objects.filter(Q(ufriendee__confirmed=False), Q(ufriendee__friender=user.id))
+        requestee_user_friend_list = User.objects.filter(Q(ufriender__confirmed=False), Q(ufriender__friendee=user.id))
+    if request.method == 'POST':
+        friend_id = list(request.POST.keys())[list(request.POST.values()).index('Confirm')]
+        try:
+            friend = Friend.objects.get(friender=friend_id, friendee=user.id)
+        except Friend.DoesNotExist:
+            return HttpResponse('No request can be found', status=403)
+        friend.confirmed = True
+        friend.save()
+        return HttpResponseRedirect('/account/friend/request/')
+    return render(request, 'friend_request.html', {'requester_user_friend_list': requester_user_friend_list,
+                                                   'requestee_user_friend_list': requestee_user_friend_list})
 
 
 def create_note(request):
