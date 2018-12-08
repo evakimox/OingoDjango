@@ -12,3 +12,8 @@ class RegisterForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField()
 
+
+class PasswordForm(forms.Form):
+    last_password = forms.CharField()
+    new_password = forms.CharField()
+

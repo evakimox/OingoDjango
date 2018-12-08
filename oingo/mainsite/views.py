@@ -48,7 +48,7 @@ def register(request):
                         user = User.objects.create_user(username, '', password)
                         user.save()
                         user = auth.authenticate(username=username, password=password)
-                        return HttpResponseRedirect('/register/success/')
+                        return HttpResponseRedirect('/account/register/success/')
     return render(request, 'register.html',
                   {'username': username, 'errMsgUsername': err_msg_username, 'errMsgPassword':err_msg_password})
 
@@ -84,7 +84,7 @@ def login(request):
                     user = auth.authenticate(username=username, password=password)
                     if user is not None and user.is_active:
                         auth.login(request, user)
-                        return HttpResponseRedirect('/login/success/')
+                        return HttpResponseRedirect('/account/login/success/')
                     elif user is not None and not user.is_active:
                         err_msg_password = 'Not an active user!'
                     else:
@@ -103,6 +103,44 @@ def login_status(request):
         return request.user
     else:
         return None
+
+
+def account_profile_redirect(request):
+    user = login_status(request)
+    if user is not None:
+        return HttpResponseRedirect('/account/profile/' + user.username + '/')
+    else:
+        return HttpResponseRedirect('/account/login/')
+
+
+def account_profile(request, profile_username):
+    user = login_status(request)
+    if user is not None: # logged in status
+        if user.username == profile_username:  # show the profile page of yourself!
+            return HttpResponse("profle logged in personal" + user.username + ' ' + profile_username)
+
+
+        else:   # show other's profile page
+            return HttpResponse("profle logged in others" + user.username + ' ' + profile_username)
+
+
+    else: # logged out status, show someone's profile page, without logged in
+        return HttpResponse("profle logged out " + user.username + ' ' + profile_username)
+
+
+
+def account_settings(request):
+    user = login_status(request)
+    if user is None:
+        return HttpResponseRedirect('/')
+    else:
+
+
+        return render(request, 'account_settings.html')
+
+
+
+
 
 
 def note(requset, nid):

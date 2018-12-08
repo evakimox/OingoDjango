@@ -23,18 +23,21 @@ urlpatterns = [
 
 
     path('', views.index),
-    path('register/', views.register),
-    path('register/success/', views.register_success),
-    path('login/', views.login),
-    path('login/success/', views.login_success),
-    path('logout/', views.logout),
+    path('account/register/', views.register),
+    path('account/register/success/', views.register_success),
+    path('account/login/', views.login),
+    path('account/login/success/', views.login_success),
+    path('account/logout/', views.logout),
+    path('account/profile/', views.account_profile_redirect),
+    path('account/profile/<str:profile_username>/', views.account_profile),
+    path('account/settings/', views.account_settings),
     path('note/<int:noteid>', views.note),
     path('friend/list/', views.friend_list),
     path('friend/request/', views.friend_request),
     path('note/create', views.create_note),
     path('filter/list/', views.filter_list),
     path('filter/create/', views.filter_create),
-    path('filter/settings/<int:fid>', views.filter_settings),
+    path('filter/settings/<int:fid>/', views.filter_settings),
 
 
 
