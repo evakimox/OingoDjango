@@ -24,17 +24,17 @@ urlpatterns = [
 
     path('', views.index),
     path('register/', views.register),
-    path('register/success/', views.registerSuccess),
+    path('register/success/', views.register_success),
     path('login/', views.login),
-    path('login/success/', views.loginSuccess),
+    path('login/success/', views.login_success),
     path('logout/', views.logout),
     path('note/<int:noteid>', views.note),
-    path('friend/list/', views.friendlist),
-    path('friend/request/', views.friendrequest),
-    path('note/create', views.createnote),
-    path('filter/list/', views.filterlist),
-    path('filter/create/', views.filtercreate),
-    path('filter/settings/<int:fid>', views.filtersettings),
+    path('friend/list/', views.friend_list),
+    path('friend/request/', views.friend_request),
+    path('note/create', views.create_note),
+    path('filter/list/', views.filter_list),
+    path('filter/create/', views.filter_create),
+    path('filter/settings/<int:fid>', views.filter_settings),
 
 
 
