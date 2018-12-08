@@ -6,5 +6,37 @@
 </head>
 <body>
 
+
+{{ profile_username }}
+
+
+<form action="/account/profile/{{ profile_username }}/" method="post">
+    {% csrf_token %}
+    {% if user_self == -1 %}
+        <!-- logged out -->
+
+    {% elif user_self == 0 %}
+        <!-- not user self -->
+        {% if friend_status == 0 %}
+            Add Friend?
+            <input type="submit" name="friend" value="Friend" />
+        {% elif friend_status == 1 %}
+            Friend Request Already Sent
+        {% elif friend_status == 2 %}
+            Confirm as your friend?
+            <input type="submit" name="friend" value="Confirm" />
+        {% elif friend_status == 3 %}
+            Your are Friends!
+        {% endif %}
+    {% elif user_self == 1 %}
+        <!-- user self -->
+        Yourself
+    {% endif %}
+</form>
+
+
+
+
+
 </body>
 </html>

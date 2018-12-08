@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponse, HttpResponseRedirect, Http404
 
 from mainsite.models import *
 
-
+from django.utils import timezone
 import django.contrib.auth as auth
 from django.contrib.auth.models import User
 
@@ -119,15 +119,72 @@ def account_profile(request, profile_username):
     try:
         profile_user = User.objects.get(username=profile_username)
     except User.DoesNotExist:
-        raise Http404
+        raise Http404("User does not exist!")
     else:
-        if user is not None:  # logged in status
-            if user.username == profile_username:  # show the profile page of yourself!
-                return HttpResponse("profle logged in personal " + user.username + ' ' + profile_username)
-            else:   # show other's profile page
-                return HttpResponse("profle logged in others " + user.username + ' ' + profile_username)
-        else: # logged out status, show someone's profile page, without logged in
-            return HttpResponse("profle logged out " + user.username + ' ' + profile_username)
+        if request.method == 'GET':
+            user_self = 0
+            friend_status = 0
+            if user is not None:  # logged in status
+                if user.username == profile_username:  # show the profile page of yourself!
+                    user_self = 1
+                else:   # show other's profile page
+                    user_self = 0
+                    try:
+                        friend = Friend.objects.get(friender=user.id, friendee=profile_user.id)
+                    except Friend.DoesNotExist:
+                        try:
+                            friend = Friend.objects.get(friender=profile_user.id, friendee=user.id)
+                        except Friend.DoesNotExist:  # doesnt have any request
+                            friend_status = 0
+                        else: # profile send request to user
+                            if friend.confirmed:
+                                friend_status = 3
+                            else:
+                                friend_status = 2
+                    else:  # user send request to profile
+                        if friend.confirmed:
+                            friend_status = 3
+                        else:
+                            friend_status = 1
+            else: # logged out status, show someone's profile page, without logged in
+                user_self = -1
+        elif request.method == 'POST':
+            if user is not None:
+                if user.username == profile_username:  # show the profile page of yourself!
+                    user_self = 1
+                    return HttpResponse('Cannot friend yourself', status=403)
+                else:   # show other's profile page
+                    user_self = 0
+                req = request.POST.get('friend')
+                if req == 'Friend':
+                    try:
+                        friend = Friend.objects.get(friender=user.id, friendee=profile_user.id)
+                    except Friend.DoesNotExist:
+                        try:
+                            friend = Friend.objects.get(friender=profile_user.id, friendee=user.id)
+                        except Friend.DoesNotExist:  # doesnt have any request
+                            friend = Friend(friender=user.id,
+                                            friendee=profile_user.id,
+                                            comfirmed=False,
+                                            createtime=timezone.now())
+                            friend.save()
+                            friend_status = 1
+                        else:
+                            return HttpResponse('Already Exist friend record', status=403)
+                    else:
+                        return HttpResponse('Already Exist friend record', status=403)
+                elif req == 'Confirm':
+                    try:
+                        friend = Friend.objects.get(friender=profile_user.id, friendee=user.id)
+                    except Friend.DoesNotExist:  # doesnt have any request
+                        return HttpResponse('No request can be found', status=403)
+                    friend.confirmed = True
+                    friend.save()
+                    friend_status = 3
+            else:
+                return HttpResponse('Not logged in', status=401)
+    return render(request, 'account_profile.html',
+           {'profile_username': profile_username, 'user_self': user_self, 'friend_status': friend_status})
 
 
 def account_settings(request):
@@ -162,16 +219,6 @@ def account_settings(request):
         return render(request, 'account_settings.html', {'errMsgPassword': err_msg_password})
 
 
-
-
-
-
-
-
-def note(requset, nid):
-    return HttpResponse("note" + nid)
-
-
 def friend_list(request):
     return HttpResponse("friendlist")
 
@@ -196,4 +243,6 @@ def filter_settings(request, fid):
     return HttpResponse("filtersettings" + fid)
 
 
+def note(requset, note_id):
+    return HttpResponse("note" + note_id)
 
