@@ -6,5 +6,18 @@
 </head>
 <body>
 
+<form action="/account/settings/" method="post">
+    {% csrf_token %}
+    <label>Your original password</label>
+    <input type="password" name="last_password">
+
+    <label>New password</label>
+    <input type="password" name="new_password">
+    {{ errMsgPassword }}
+
+    <button type="submit">Change</button>
+</form>
+
+
 </body>
 </html>

@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, HttpResponse, HttpResponseRedirect, Http404
 
 from mainsite.models import *
 
@@ -113,20 +113,21 @@ def account_profile_redirect(request):
         return HttpResponseRedirect('/account/login/')
 
 
+# to be modified - personal profile
 def account_profile(request, profile_username):
     user = login_status(request)
-    if user is not None: # logged in status
-        if user.username == profile_username:  # show the profile page of yourself!
-            return HttpResponse("profle logged in personal" + user.username + ' ' + profile_username)
-
-
-        else:   # show other's profile page
-            return HttpResponse("profle logged in others" + user.username + ' ' + profile_username)
-
-
-    else: # logged out status, show someone's profile page, without logged in
-        return HttpResponse("profle logged out " + user.username + ' ' + profile_username)
-
+    try:
+        profile_user = User.objects.get(username=profile_username)
+    except User.DoesNotExist:
+        raise Http404
+    else:
+        if user is not None:  # logged in status
+            if user.username == profile_username:  # show the profile page of yourself!
+                return HttpResponse("profle logged in personal " + user.username + ' ' + profile_username)
+            else:   # show other's profile page
+                return HttpResponse("profle logged in others " + user.username + ' ' + profile_username)
+        else: # logged out status, show someone's profile page, without logged in
+            return HttpResponse("profle logged out " + user.username + ' ' + profile_username)
 
 
 def account_settings(request):
@@ -134,9 +135,33 @@ def account_settings(request):
     if user is None:
         return HttpResponseRedirect('/')
     else:
+        err_msg_password = ''
+        last_password = ''
+        new_password = ''
+        if request.method == 'GET':
+            return render(request, 'account_settings.html', {'errMsgPassword': err_msg_password})
+        elif request.method == 'POST':
+            form = PasswordForm(request.POST)
+            last_password = request.POST.get('last_password')
+            new_password = request.POST.get('new_password')
+            if form.is_valid():
+                if last_password == '':
+                    err_msg_password = 'Pleas enter your original password'
+                else:
+                    if new_password == '':
+                        err_msg_password = 'Please enter your new password'
+                    else:
+                        user = auth.authenticate(username=user.username, password=last_password)
+                        if user is None:
+                            err_msg_password = 'Invalid original password!'
+                        else:
+                            user.set_password(new_password)
+                            user.save()
+                            auth.login(request, user)
+                            err_msg_password = 'Successfully Changed Password!'
+        return render(request, 'account_settings.html', {'errMsgPassword': err_msg_password})
 
 
-        return render(request, 'account_settings.html')
 
 
 
