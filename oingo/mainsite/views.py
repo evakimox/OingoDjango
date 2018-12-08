@@ -252,10 +252,6 @@ def friend_request(request):
                                                    'requestee_user_friend_list': requestee_user_friend_list})
 
 
-def create_note(request):
-    return HttpResponse("createnote")
-
-
 def filter_list(request):
     return HttpResponse("filterlist")
 
@@ -270,4 +266,77 @@ def filter_settings(request, fid):
 
 def note(requset, note_id):
     return HttpResponse("note" + note_id)
+
+
+
+
+def create_note(request):
+    tags = Tag.objects.all()
+    Tags = {'TagList': tags}
+    return render(request, "writeNote.html", Tags)
+
+
+def create_tag(request):
+    return render(request, "createTag.html")
+
+
+def submit_tag(request):
+    if request.method == 'POST':
+        newTag = request.POST.get('newTag')
+        tag = Tag(ttext=newTag)
+        tag.save()
+        print("priting new tag id:",  tag.tid)
+        return HttpResponse("Your tag is saved")
+    else:
+        return HttpResponse("Sorry there is some error")
+
+
+def is_float(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
+def submit_note(request):
+    if request.method == 'POST':
+        noteText = request.POST.get('noteText')
+        user = login_status(request)
+        if user is None:
+            return HttpResponseRedirect('/account/login/')
+        lat = request.POST.get('displayLat')
+        lng = request.POST.get('displayLog')
+        if (not is_float(lat)) or (not is_float(lng)):
+            return HttpResponse("The location is not correct, please select on map and re-try :) ")
+        radius = request.POST.get('radius')
+        if not is_float(radius):
+            return HttpResponse("The radius you give I cannot understand, would you try another one?")
+        starttime = request.POST.get('startTime')
+        endtime = request.POST.get('endTime')
+        visibleDate = request.POST.get('visibleDate')
+
+        starttime = visibleDate + ' ' + starttime
+        endtime = visibleDate + ' ' + endtime
+
+        visibility = request.POST.get('visibleType')
+        createtime = timezone.now()
+        myNote = Note(uid=user,
+                      ntext=noteText,
+                      lat=lat, lng=lng, radius=radius,
+                      starttime=starttime,
+                      endtime=endtime,
+                      scheduletype=1,
+                      visibility=visibility,
+                      createtime=createtime)
+
+        selectedTags = request.POST.getlist("selectDefaultTags")
+        myNote.save()
+        notetagBulk = []
+        if len(selectedTags)>0:
+            for tag in selectedTags:
+                notetag = NoteTag(nid_id=myNote.nid, tid_id=tag)
+                notetagBulk.append(notetag)
+            NoteTag.objects.bulk_create(notetagBulk)
+        return HttpResponse(noteText)
 
