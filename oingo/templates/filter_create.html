@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Create New Filter</title>
+</head>
+<body>
+
+<div align="center" class="container">
+    <form action="/filter/create/" method="post">
+    {% csrf_token %}
+
+        <div>
+            <div style="display: inline-block">
+                select location:
+            </div>
+            <div style="display: inline-block" id="lat" >
+                <input type="text" value="latitude" name="displayLat" readonly="readonly">
+            </div>
+            <div style="display: inline-block" >
+                ,
+            </div>
+            <div style="display: inline-block" id="log" >
+                <input type="text" value="longitude" name="displayLog" readonly="readonly">
+            </div>
+            <div id="googleMap" style="width:400px;height:400px;"></div>
+        </div>
+
+        <div>
+            Radius
+            <input type="text" value="200" name="radius" >
+        </div>
+
+        <div>
+            Schedule time
+            <input type="time" value="01:00:00" name="startTime"> ~ <input type="time" value="11:00:00" name="endTime">
+        </div>
+
+
+        <div>
+            See notes from:
+            <div style="padding: 10px; display: inline-block">
+                <input type="radio" name="onfriend" value=0 />Every one
+            </div>
+            <div style="padding: 10px; display: inline-block">
+                <input type="radio" name="onfriend" value=1 />Only my friends
+            </div>
+        </div>
+
+        Filter on Tag (Optional):
+        <input type="text" name="tag" />
+
+        <div>
+            Filter on State:
+            should give out a list of states
+            {% for state in state_list %}
+                <div style="padding: 10px; display: inline-block">
+                    <input type="radio" name="state" value={{ state.sid }} />{{ state.stext }}
+                </div>
+            {% endfor %}
+            <div style="padding: 10px; display: inline-block">
+                <input type="radio" name="state" value=0 checked /> No filter on state
+            </div>
+        </div>
+
+        <div>
+            <button class="btn-primary" type="submit">Finish!</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function myMap() {
+var mapProp= {
+    center:new google.maps.LatLng(40.696423,-73.986611),
+    zoom:13,
+};
+var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+google.maps.event.addListener(map, 'click', function(event) {
+    let latitude = event.latLng.lat();
+    let longitude = event.latLng.lng();
+    //alert( latitude + ", " + longitude);
+    //document.getElementById("lat").innerHTML = latitude;
+    document.getElementsByName("displayLat")[0].setAttribute("value", latitude);
+    //document.getElementById("log").innerHTML = longitude;
+    document.getElementsByName("displayLog")[0].setAttribute("value", longitude);
+    console.log("latitude: ", latitude);
+    console.log("longitude: ", longitude);
+});
+
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-VWYShTlN6nFvPrYc_rbIZuyQv9y6644&callback=myMap"></script>
+
+
+
+</body>
+</html>

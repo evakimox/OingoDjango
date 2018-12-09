@@ -32,13 +32,18 @@ urlpatterns = [
     path('account/friend/list/', views.friend_list),
     path('account/friend/request/', views.friend_request),
     path('note/<int:note_id>', views.note),
-    path('filter/list/', views.filter_list),
-    path('filter/create/', views.filter_create),
-    path('filter/settings/<int:fid>/', views.filter_settings),
 
     path('note/create/', views.create_note),
     path('note/submit/', views.submit_note),
     path('tag/create/', views.create_tag),
     path('tag/submit/', views.submit_tag),
+
+    path('timeline/', views.timeline),
+    path('note/<int:note_id>/', views.note),
+    path('submitComment/<int:note_id>/', views.submitComment),
+
+    path('filter/list/', views.filter_list),
+    path('filter/create/', views.filter_create),
+    # path('filter/settings/<int:fid>/', views.filter_settings),
 
 ]

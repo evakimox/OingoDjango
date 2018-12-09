@@ -64,6 +64,6 @@ class Filter(models.Model):
     starttime = models.DateTimeField()
     endtime = models.DateTimeField()
     onfriend = models.IntegerField()
-    tid = models.ForeignKey(Tag, on_delete=models.CASCADE)
-    sid = models.ForeignKey(State, on_delete=models.CASCADE)
+    tid = models.ForeignKey(Tag, null=True, on_delete=models.CASCADE)
+    sid = models.ForeignKey(State, null=True, on_delete=models.CASCADE)
     uid = models.ForeignKey(User, on_delete=models.CASCADE)

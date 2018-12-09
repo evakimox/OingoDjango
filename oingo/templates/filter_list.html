@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Filter List</title>
+</head>
+<body>
+
+
+<form action="/filter/list/" method="post">
+    {% csrf_token %}
+
+    {% for filter in user_filter_list %}
+        {{ filter.lat }}
+        {{ filter.lng }}
+        {{ filter.radius }}
+        {{ filter.starttime }}
+        {{ filter.endtime }}
+        {{ filter.onfriend }}
+        {{ filter.tid.ttext }}
+        {{ filter.sid.stext }}
+        <input type="submit" name="{{ filter.fid }}" value="Delete" />
+        <!--
+        <a href="/filter/settings/{{ filter.fid }}/">Modify</a>
+        -->
+    {% endfor %}
+
+</form>
+
+<a href="/filter/create/">Create new filter</a>
+
+</body>
+</html>

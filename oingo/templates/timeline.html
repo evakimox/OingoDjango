@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Oingo</title>
+</head>
+<body>
+<div class="container" align="center">
+    {% for note in noteList %}
+    <div class="container" style="border: 2px solid bisque; margin: 20px; padding: 10px; border-radius: 10px">
+        <div class="row justify-content-between">
+            <div class="col-2" style="font-size: small; color:gainsboro;" align="left">
+                {{ note.uid.username }}
+            </div>
+            <div class="col-4" style="font-size: small; color:gainsboro;" align="right">
+                {{ note.createtime }}
+            </div>
+        </div>
+        <div class="row" style="padding: 5px; padding-left: 20px">
+            {{ note.ntext }}
+        </div>
+        <div align="right">
+            <a href="/note/{{ note.nid }}/"> link to note</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>

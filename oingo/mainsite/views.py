@@ -252,24 +252,6 @@ def friend_request(request):
                                                    'requestee_user_friend_list': requestee_user_friend_list})
 
 
-def filter_list(request):
-    return HttpResponse("filterlist")
-
-
-def filter_create(request):
-    return HttpResponse("filtercreate")
-
-
-def filter_settings(request, fid):
-    return HttpResponse("filtersettings" + fid)
-
-
-def note(requset, note_id):
-    return HttpResponse("note" + note_id)
-
-
-
-
 def create_note(request):
     tags = Tag.objects.all()
     Tags = {'TagList': tags}
@@ -339,4 +321,158 @@ def submit_note(request):
                 notetagBulk.append(notetag)
             NoteTag.objects.bulk_create(notetagBulk)
         return HttpResponse(noteText)
+
+
+def timeline(request):
+    noteList = Note.objects.all().order_by('-createtime')
+    outputNotes = {'noteList' : noteList}
+    return render(request, "timeline.html", outputNotes)
+
+
+def note(request, note_id):
+    singleNote = Note.objects.get(nid=note_id)
+    comments = Comment.objects.filter(nid_id=note_id).order_by('-createtime')
+    output = {'note': singleNote, 'comments': comments}
+    return render(request, "singleNote.html", output)
+
+
+def submitComment(request, note_id):
+    print("nid is:", note_id)
+    user = login_status(request)
+    if user is None:
+        return HttpResponseRedirect('/account/login/')
+    if request.method == 'POST':
+        commentString = request.POST.get('comment')
+        commentString.strip()
+        if (commentString == "" or commentString == None):
+            return HttpResponse("You did't say anything. . . ")
+        else:
+            commentObject = Comment(ctext=commentString, nid_id=note_id, uid_id=user.id, createtime=timezone.now())
+            commentObject.save()
+            return HttpResponseRedirect('/note/' + str(note_id) + '/')
+            # return HttpResponse('Your comment is submitted')
+    return HttpResponse('sorry, encountered error.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def filter_list(request):
+    user = login_status(request)
+    if user is None:
+        return HttpResponseRedirect('/account/login/')
+    if request.method == 'GET':
+        user_filter_list = Filter.objects.filter(uid_id=user.id)
+    if request.method == 'POST':
+        delete_filter_id = list(request.POST.keys())[list(request.POST.values()).index('Delete')]
+        try:
+            delete_filter = Filter.objects.get(fid=delete_filter_id)
+        except Filter.DoesNotExist:
+            return HttpResponse("Filter does not exist", status=403)
+        else:
+            if delete_filter.uid_id != user.id:
+                return HttpResponse("You cannot modify other's filter", status=403)
+            delete_filter.delete()
+        return HttpResponseRedirect('/filter/list/')
+    return render(request, 'filter_list.html', {'user_filter_list': user_filter_list})
+
+
+def filter_create(request):
+    user = login_status(request)
+    if user is None:
+        return HttpResponseRedirect('/account/login/')
+    lat = 0
+    lng = 0
+    radius = 0
+    starttime = 0
+    endtime = 0
+    onfriend = 0
+    tid_id = None  # tag
+    sid_id = None  # state
+    uid_id = user.id  # user
+    state_list = None  # user state list
+    if request.method == 'GET':
+        state_list = State.objects.filter(uid=user.id)
+    if request.method == 'POST':
+        lat = request.POST.get('displayLat')
+        lng = request.POST.get('displayLog')
+        if (not is_float(lat)) or (not is_float(lng)):
+            return HttpResponse("The location is not correct, please select on map and re-try :) ", status=403)
+        radius = request.POST.get('radius')
+        if not is_float(radius):
+            return HttpResponse("The radius you give I cannot understand, would you try another one?", status=403)
+
+        starttime = request.POST.get('startTime')
+        endtime = request.POST.get('endTime')
+        current_date = timezone.now().strftime("%Y-%m-%d")
+        starttime = current_date + ' ' + starttime
+        endtime = current_date + ' ' + endtime
+
+        onfriend = int(request.POST.get('onfriend'))
+        if onfriend != 0 and onfriend != 1:
+            return HttpResponse('Not valid onfriend value', status=403)
+
+        state = int(request.POST.get('state'))
+        if state == 0:
+            sid_id = None
+        else:
+            try:
+                state_id = State.objects.get(sid=state)
+            except State.DoesNotExist:
+                return HttpResponse('Not valid state id', status=403)
+            else:
+                sid_id = state
+
+        tag_name = request.POST.get('tag')
+        if tag_name == '':
+            tid_id = None
+        else:
+            try:
+                tag = Tag.objects.get(ttext=tag_name)
+            except Tag.DoesNotExist:
+                tag = Tag(ttext=tag_name)
+                tag.save()
+                tid_id = tag.tid
+            else:
+                tid_id = tag.tid
+        new_filter = Filter(
+            lat=lat,
+            lng=lng,
+            radius=radius,
+            starttime=starttime,
+            endtime=endtime,
+            onfriend=onfriend,
+            tid_id=tid_id,
+            sid_id=sid_id,
+            uid_id=uid_id
+        )
+        new_filter.save()
+        return HttpResponseRedirect('/filter/list/')
+    return render(request, 'filter_create.html', {
+        'lat': lat,
+        'lng': lng,
+        'radius': radius,
+        'starttime': starttime,
+        'endtime': endtime,
+        'onfriend': onfriend,
+        'tid_id': tid_id,
+        'sid_id': sid_id,
+        'uid_id': uid_id,
+        'state_list': state_list
+    })
+
+
+# def filter_settings(request, fid):
+    # return HttpResponse("filtersettings" + str(fid))
+
+
 
