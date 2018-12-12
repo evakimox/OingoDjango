@@ -26,26 +26,46 @@
         <h1>Your filters: </h1>
         {% if user_filter_list.count == 0 %}
             You don't have any filter!
-        {% endif %}
+        {% else %}
 
         <form action="/filter/list/" method="post">
             {% csrf_token %}
-            {% for filter in user_filter_list %}
-                {{ filter.lat }}
-                {{ filter.lng }}
-                {{ filter.radius }}
-                {{ filter.starttime }}
-                {{ filter.endtime }}
-                {{ filter.onfriend }}
-                {{ filter.tid.ttext }}
-                {{ filter.sid.stext }}
-                <input type="submit" name="{{ filter.fid }}" value="Delete" />
-                <!--
-                <a href="/filter/settings/{{ filter.fid }}/">Modify</a>
-                -->
-            {% endfor %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Latitude</th>
+                        <th scope="col">Longitude</th>
+                        <th scope="col">Radius</th>
+                        <th scope="col">Start Time</th>
+                        <th scope="col">End Time</th>
+                        <th scope="col">Only See</th>
+                        <th scope="col">Tag</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Operation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                {% for filter in user_filter_list %}
+                    <td>{{ filter.lat }}</td>
+                    <td>{{ filter.lng }}</td>
+                    <td>{{ filter.radius }}</td>
+                    <td>{{ filter.start_time }}</td>
+                    <td>{{ filter.end_time }}</td>
+                    {% if filter.onfriend == 1 %}
+                    <td>Friends</td>
+                    {% else %}
+                    <td>Everyone</td>
+                    {% endif %}
+                    <td>{{ filter.tid.ttext }}</td>
+                    <td>{{ filter.sid.stext }}</td>
+                    <td><input class="btn btn-primary" type="submit" name="{{ filter.fid }}" value="Delete" /></td>
+                {% endfor %}
+                </tr>
+                </tbody>
+            </table>
         </form>
-
+        {% endif %}
     </div>
 </body>
 </html>
