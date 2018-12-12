@@ -62,9 +62,9 @@
         {% endif %}
     </form>
     <hr/>
+    {% if user_self == 1 %}
     <form action="/state/updateState/" method="post">
     {% csrf_token %}
-        {% if user_self == 1 %}
             I am feeling:
             {% for s in states %}
                 <div style="padding: 10px; display: inline-block">
@@ -78,14 +78,15 @@
             <input type="hidden" value="latitude" id="lat" name="displayLat">
             <input type="hidden" value="longitude" id="lng" name="displayLog">
 
-            <button type="submit" class="btn-primary" disabled="disabled" id="submit">confirm</button>
-        {% endif %}
+            <button type="submit" class="btn btn-primary" disabled="disabled" id="submit">confirm</button>
     </form>
+    {% endif %}
 </div>
 
 </div>
 
 </body>
+{% if user_self == 1 %}
 <script>
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
@@ -99,4 +100,5 @@ if (navigator.geolocation) {
     });
 }
 </script>
+{% endif %}
 </html>

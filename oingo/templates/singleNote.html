@@ -31,7 +31,7 @@
     </div>
 <div align="center" class="container">
     <!-- note content -->
-    <div class="container" style="border: 2px solid bisque; margin: 20px; padding: 10px; border-radius: 10px; width: auto">
+    <div class="container" style="border: 2px solid bisque; margin: 20px 0px;  padding: 10px; border-radius: 10px; width: auto">
         <div class="row justify-content-between">
             <div class="col-2" style="font-size: small; color:gainsboro;" align="left">
                 <a href="/account/profile/{{ note.uid.username }}/" target="_blank">{{ note.uid.username }}</a>
@@ -47,7 +47,7 @@
 
     {% if user_status %}
     <!-- comment section -->
-    <div class="container" style="border: 2px solid aliceblue; margin: 20px; padding: 10px; border-radius: 10px">
+    <div class="container" style="border: 2px solid aliceblue; margin: 20px 0px; padding: 10px; border-radius: 10px">
         <form action="/submitComment/{{ note.nid }}/" method="post">
             {% csrf_token %}
             <div>
@@ -57,28 +57,31 @@
                 ></textarea>
             </div>
             <div>
-                <button class="btn-primary" type="submit">Comment</button>
+                <button class="btn btn-primary" type="submit">Comment</button>
             </div>
         </form>
     </div>
     {% endif %}
 
     <!-- display comment section -->
-    {% for comment in comments %}
-    <div class="container" style="border: 2px solid lightblue; margin: 20px; padding: 10px; border-radius: 10px">
-        <div class="row justify-content-between">
-            <div class="col-2" style="font-size: small; color:gainsboro;" align="left">
-                <a href="/account/profile/{{ comment.uid.username }}/" target="_blank">{{ comment.uid.username }}</a>
+    <div class="container" style="border: 2px solid aliceblue; margin: 20px 0px; padding: 10px; border-radius: 10px">
+        <h4>Comments</h4>
+        {% for comment in comments %}
+        <div class="container" style="border: 2px solid lightblue; margin: 20px 0px; padding: 10px; border-radius: 10px">
+            <div class="row justify-content-between">
+                <div class="col-2" style="font-size: small; color:gainsboro;" align="left">
+                    <a href="/account/profile/{{ comment.uid.username }}/" target="_blank">{{ comment.uid.username }}</a>
+                </div>
+                <div class="col-4" style="font-size: small; color:gainsboro;" align="right">
+                    {{ comment.createtime }}
+                </div>
             </div>
-            <div class="col-4" style="font-size: small; color:gainsboro;" align="right">
-                {{ comment.createtime }}
+            <div class="row" style="padding: 5px; padding-left: 20px">
+                {{ comment.ctext }}
             </div>
         </div>
-        <div class="row" style="padding: 5px; padding-left: 20px">
-            {{ comment.ctext }}
-        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 </body>
 </html>

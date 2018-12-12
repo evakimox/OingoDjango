@@ -40,7 +40,7 @@
         {% csrf_token %}
         {% for friend in requestee_user_friend_list %}
             <a href="/account/profile/{{ friend.username }}/">{{ friend.username }}</a>
-            <input type="submit" name="{{ friend.id }}" value="Confirm" />
+            <input class="btn btn-primary" type="submit" name="{{ friend.id }}" value="Confirm" />
         {% endfor %}
     </form>
 </div>
