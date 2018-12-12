@@ -491,7 +491,7 @@ def show_timeline_func(request, lat, lng, ctime):
                             continue
                         insert = True
                         break
-                        
+
                 if insert or totally_not_effect:
                     note_list.append(each_note)
     return render(request, "timeline.html", {'noteList': note_list, 'user_status': user_status, 'user_username': user_username, 'user_state_text': user_state_text, 'lat': user_lat, 'lng': user_lng})
