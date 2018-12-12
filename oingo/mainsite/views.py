@@ -465,7 +465,9 @@ def show_timeline_func(request, lat, lng, ctime):
 
                 insert = False
                 for each_filter in user_filter_list:
-                    if user_state is not None and each_filter.sid_id != user_state:
+                    if user_state is None and each_filter.sid_id is not None:
+                        continue
+                    if not ((user_state is not None and each_filter.sid_id is None) or (user_state is not None and each_filter.sid_id is not None and each_filter.sid_id == user_state)):
                         continue
                     if user_lat is not None and user_lng is not None and great_circle((user_lat, user_lng), (each_note.lat, each_note.lng)).meters > each_note.radius:
                         continue
