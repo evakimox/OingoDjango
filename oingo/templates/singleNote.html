@@ -3,17 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <title>{{ note.ntext }}</title>
 </head>
 <body>
-<div>
+<!-- Top bar -->
+    <div class="container">
+        <div style="padding: 10px; display: inline-block">
+            <a href="/timeline/"><b>OINGO</b></a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/account/friend/request/">friends</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/note/create/">write</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/account/profile/">profile</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/filter/create/">filter</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="account/logout/"><b>{{ user_username }}</b> -> log out</a>
+        </div>
+    </div>
+<div align="center" class="container">
     <!-- note content -->
     <div class="container" style="border: 2px solid bisque; margin: 20px; padding: 10px; border-radius: 10px; width: auto">
         <div class="row justify-content-between">
             <div class="col-2" style="font-size: small; color:gainsboro;" align="left">
-                {{ note.uid.username }}
+                <a href="/account/profile/{{ note.uid.username }}/" target="_blank">{{ note.uid.username }}</a>
             </div>
             <div class="col-4" style="font-size: small; color:gainsboro;" align="right">
                 {{ note.createtime }}
@@ -23,8 +44,8 @@
             {{ note.ntext }}
         </div>
     </div>
-</div>
-<div>
+
+    {% if user_status %}
     <!-- comment section -->
     <div class="container" style="border: 2px solid aliceblue; margin: 20px; padding: 10px; border-radius: 10px">
         <form action="/submitComment/{{ note.nid }}/" method="post">
@@ -40,14 +61,14 @@
             </div>
         </form>
     </div>
-</div>
-<div>
+    {% endif %}
+
     <!-- display comment section -->
     {% for comment in comments %}
     <div class="container" style="border: 2px solid lightblue; margin: 20px; padding: 10px; border-radius: 10px">
         <div class="row justify-content-between">
             <div class="col-2" style="font-size: small; color:gainsboro;" align="left">
-                {{ comment.uid.username }}
+                <a href="/account/profile/{{ comment.uid.username }}/" target="_blank">{{ comment.uid.username }}</a>
             </div>
             <div class="col-4" style="font-size: small; color:gainsboro;" align="right">
                 {{ comment.createtime }}

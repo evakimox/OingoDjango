@@ -2,10 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <title>Writing Note...</title>
 </head>
 <body>
+<!-- Top bar -->
+    <div class="container">
+        <div style="padding: 10px; display: inline-block">
+            <a href="/timeline/"><b>OINGO</b></a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/account/friend/request/">friends</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/note/create/">write</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/account/profile/">profile</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/filter/create/">filter</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="account/logout/"><b>{{ user_username }}</b> -> log out</a>
+        </div>
+    </div>
 <div align="center" class="container">
     <form action="/note/submit/" method="post">
     {% csrf_token %}
@@ -52,7 +75,7 @@
         </div>
         <div>
             Visible time
-            <input type="time" value="01:00:00" name="startTime"> ~ <input type="time" value="11:00:00" name="endTime">
+            <input type="time" value="01:00" name="startTime"> ~ <input type="time" value="11:00" name="endTime">
         </div>
         <div>
             Schedule type

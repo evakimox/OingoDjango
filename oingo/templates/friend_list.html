@@ -2,13 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <title>Friend List</title>
 </head>
 <body>
 
-    {% for friend in user_friend_list %}
-        <label>{{ friend.username }}</label>
-    {% endfor %}
+    <!-- Top bar -->
+    <div class="container">
+        <div style="padding: 10px; display: inline-block">
+            <a href="/timeline/"><b>OINGO</b></a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/account/friend/request/">friend requests</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/account/friend/list/">friends list</a>
+        </div>
+    </div>
 
+    <div align="center" class="container">
+    <h1>My friends: </h1>
+    {% if user_friend_list.count == 0 %}
+        You don't have any friend!
+    {% endif %}
+    {% for friend in user_friend_list %}
+        <a href="/account/profile/{{ friend.username }}/">{{ friend.username }}</a>
+    {% endfor %}
+    </div>
 </body>
 </html>

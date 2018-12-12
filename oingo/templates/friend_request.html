@@ -2,27 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <title>Friend Requests</title>
 </head>
 <body>
+    <!-- Top bar -->
+    <div class="container">
+        <div style="padding: 10px; display: inline-block">
+            <a href="/timeline/"><b>OINGO</b></a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/account/friend/request/">friend requests</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/account/friend/list/">friends list</a>
+        </div>
+    </div>
+<div align="center">
+    <h1>Have Sent Requests to: </h1>
+    {% if requester_user_friend_list.count == 0 %}
+        You dont't have any request unanswered!
+    {% endif %}
+    <form action="/account/friend/request/" method="post">
+        {% csrf_token %}
+        {% for friend in requester_user_friend_list %}
+            <label>{{ friend.username }}</label>
+        {% endfor %}
+    </form>
 
-<h1>Have Sent Requests to: </h1>
-<form action="/account/friend/request/" method="post">
-    {% csrf_token %}
-    {% for friend in requester_user_friend_list %}
-        <label>{{ friend.username }}</label>
-    {% endfor %}
-</form>
-
-
-<h1>Received Requests from: </h1>
-<form action="/account/friend/request/" method="post">
-    {% csrf_token %}
-    {% for friend in requestee_user_friend_list %}
-        <label>{{ friend.username }}</label>
-        <input type="submit" name="{{ friend.id }}" value="Confirm" />
-    {% endfor %}
-</form>
-
+    <h1>Received Requests from: </h1>
+    {% if requester_user_friend_list.count == 0 %}
+        You dont't have any request unanswered!
+    {% endif %}
+    <form action="/account/friend/request/" method="post">
+        {% csrf_token %}
+        {% for friend in requestee_user_friend_list %}
+            <label>{{ friend.username }}</label>
+            <input type="submit" name="{{ friend.id }}" value="Confirm" />
+        {% endfor %}
+    </form>
+</div>
 </body>
 </html>

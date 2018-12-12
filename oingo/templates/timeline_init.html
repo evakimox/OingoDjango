@@ -36,41 +36,35 @@
             <a href="/account/register/">register</a> / <a href="/account/login/">login</a>
         </div>
         {% endif %}
-        {% if user_state_text is not None %}
         <div style="padding: 10px; display: inline-block">
-            Your are: {{ user_state_text }}
-        </div>
-        {% endif %}
-        
-        <div style="padding: 10px; display: inline-block">
-            <form action="/timeline/@{{ lat }},{{ lng }}/" method="post">
-                {% csrf_token %}
-                <input type="text" placeholder="Search..." name="search">
-                <button class="btn-primary" type="submit">Search</button>
-            </form>
+            <a href="/timeline/" id="getMyPosition">
+                <i class="fas fa-crosshairs"></i> Getting location...
+            </a>
         </div>
     </div>
 </div>
 
 <div class="container" align="center">
-    {% for note in noteList %}
-    <div class="container" style="border: 2px solid bisque; margin: 20px; padding: 10px; border-radius: 10px">
-        <div class="row justify-content-between">
-            <div class="col-2" style="font-size: small; color:gainsboro;" align="left">
-                <a href="/account/profile/{{ note.uid.username }}/" target="_blank">{{ note.uid.username }}</a>
-            </div>
-            <div class="col-4" style="font-size: small; color:gainsboro;" align="right">
-                {{ note.createtime }}
-            </div>
-        </div>
-        <div class="row" style="padding: 5px; padding-left: 20px">
-            {{ note.ntext }}
-        </div>
-        <div align="right">
-            <a href="/note/{{ note.nid }}/" target="_blank"> Details </a>
-        </div>
-    </div>
-    {% endfor %}
+    <div class="alert alert-warning" role="alert" id="info"> PLEASE ALLOW POSITION PERMISSION </div>
 </div>
 </body>
+
+<script>
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+        let lat = position.coords.latitude;
+        let lng = position.coords.longitude;
+        console.log(lat);
+        console.log(lng);
+        let getMyPositon = document.getElementById("getMyPosition");
+        let infoBox = document.getElementById("info");
+        getMyPositon.innerHTML = "<i class=\"fas fa-crosshairs\"></i> Location Get!";
+        getMyPositon.setAttribute("href", "/timeline/@" + lat + "," + lng + "/");
+        infoBox.innerHTML = "Gotcha! Redirecting for you...";
+        infoBox.setAttribute("class", "alert alert-success");
+        window.location.href = "/timeline/@" + lat + "," + lng + "/";
+    });
+}
+</script>
+
 </html>

@@ -2,32 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <title>Your Filter List</title>
 </head>
 <body>
 
+    <!-- Top bar -->
+    <div class="container">
+        <div style="padding: 10px; display: inline-block">
+            <a href="/timeline/"><b>OINGO</b></a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/filter/create/">create filters</a>
+        </div>
+        <div style="padding: 10px; display: inline-block">
+            <a href="/filter/list/">view my filters</a>
+        </div>
+    </div>
 
-<form action="/filter/list/" method="post">
-    {% csrf_token %}
+    <div class="container" style="padding: 30px">
+        <h1>Your filters: </h1>
+        {% if user_filter_list.count == 0 %}
+            You don't have any filter!
+        {% endif %}
 
-    {% for filter in user_filter_list %}
-        {{ filter.lat }}
-        {{ filter.lng }}
-        {{ filter.radius }}
-        {{ filter.starttime }}
-        {{ filter.endtime }}
-        {{ filter.onfriend }}
-        {{ filter.tid.ttext }}
-        {{ filter.sid.stext }}
-        <input type="submit" name="{{ filter.fid }}" value="Delete" />
-        <!--
-        <a href="/filter/settings/{{ filter.fid }}/">Modify</a>
-        -->
-    {% endfor %}
+        <form action="/filter/list/" method="post">
+            {% csrf_token %}
+            {% for filter in user_filter_list %}
+                {{ filter.lat }}
+                {{ filter.lng }}
+                {{ filter.radius }}
+                {{ filter.starttime }}
+                {{ filter.endtime }}
+                {{ filter.onfriend }}
+                {{ filter.tid.ttext }}
+                {{ filter.sid.stext }}
+                <input type="submit" name="{{ filter.fid }}" value="Delete" />
+                <!--
+                <a href="/filter/settings/{{ filter.fid }}/">Modify</a>
+                -->
+            {% endfor %}
+        </form>
 
-</form>
-
-<a href="/filter/create/">Create new filter</a>
-
+    </div>
 </body>
 </html>

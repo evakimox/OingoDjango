@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 
 from mainsite import views
 
@@ -39,11 +39,17 @@ urlpatterns = [
     path('tag/submit/', views.submit_tag),
 
     path('timeline/', views.timeline),
+    re_path(r'^timeline/@(?P<lat>(-?\d+)(\.\d+)?),(?P<lng>(-?\d+)(\.\d+)?)/', views.timeline_position),
+
     path('note/<int:note_id>/', views.note),
-    path('submitComment/<int:note_id>/', views.submitComment),
+    path('submitComment/<int:note_id>/', views.submit_comment),
 
     path('filter/list/', views.filter_list),
     path('filter/create/', views.filter_create),
-    # path('filter/settings/<int:fid>/', views.filter_settings),
+
+    path('state/updateState/', views.update_state),
+
+    path('backdoor/', views.backdoor),
+    path('backdoorUpdate/', views.backdoor_update)
 
 ]

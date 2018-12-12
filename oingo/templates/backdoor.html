@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>backdoor</title>
+</head>
+<body>
+<H1>This is backdoor page(demo only)</H1>
+<div>
+    <form action="/backdoorUpdate/" method="post">
+        {% csrf_token %}
+        Modify Your Current Time?
+        <div>
+            <input type="radio" name="modifyTime" value="True" {% if modify_time %} checked {% endif %} >
+            <label>Yes</label>
+        </div>
+        <div>
+            <input type="radio" name="modifyTime" value="False" {% if not modify_time %} checked {% endif %} >
+            <label>No</label>
+        </div>
+
+        <div>
+            Day
+            <input type="date" value="2019-01-01" name="date">
+        </div>
+        <div>
+            Time
+            <input type="time" value="01:00" name="time">
+        </div>
+
+        Modify Your Current Location?
+        <div>
+            <input type="radio" name="modifyLocation" value="True" {% if modify_location %} checked {% endif %} >
+            <label>Yes</label>
+        </div>
+        <div>
+            <input type="radio" name="modifyLocation" value="False" {% if not modify_location %} checked {% endif %} >
+            <label>No</label>
+        </div>
+
+        <div>
+            selected location
+            <input type="text" value="40.694183931237575" name="displayLat" readonly="readonly">
+            <input type="text" value="-73.98693701268212" name="displayLog" readonly="readonly">
+        </div>
+        <button type="submit">update my status</button>
+    </form>
+    <div id="googleMap" style="width:400px;height:400px;"></div>
+
+    <div>
+    All notes:
+    <div>
+
+    </div>
+    <div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>note text</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>user</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>latitude</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>longitude</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>radius</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>date</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>start time</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>end time</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>schedule type</b>
+        </div>
+        <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+            <b>visibility</b>
+        </div>
+    </div>
+        {% for note in notes %}
+            <div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {{ note.ntext }}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {{ note.uid.username }}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {{ note.lat }}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {{ note.lng }}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {{ note.radius }}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {{ note.time_date }}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {{ note.start_time }}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {{ note.end_time }}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {% if note.scheduletype == 0 %}
+                        0 repetition
+                    {% elif note.scheduletype == 1 %}
+                        1 daily
+                    {% elif note.scheduletype == 2 %}
+                        2 weekly
+                    {% elif note.scheduletype == 3 %}
+                        3 monthly
+                    {% elif note.scheduletype == 4 %}
+                        4 yearly
+                    {% endif %}
+                </div>
+                <div style="width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                ">
+                    {% if note.visibility == 0 %}
+                        0 self
+                    {% elif note.visibility == 1 %}
+                        1 friends
+                    {% elif note.visibility == 2 %}
+                        2 everyone
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script>
+function myMap() {
+var mapProp= {
+    center:new google.maps.LatLng(40.696423,-73.986611),
+    zoom:13,
+};
+var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+google.maps.event.addListener(map, 'click', function(event) {
+    let latitude = event.latLng.lat();
+    let longitude = event.latLng.lng();
+    //alert( latitude + ", " + longitude);
+    //document.getElementById("lat").innerHTML = latitude;
+    document.getElementsByName("displayLat")[0].setAttribute("value", latitude);
+    //document.getElementById("log").innerHTML = longitude;
+    document.getElementsByName("displayLog")[0].setAttribute("value", longitude);
+    console.log("latitude: ", latitude);
+    console.log("longitude: ", longitude);
+});
+
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-VWYShTlN6nFvPrYc_rbIZuyQv9y6644&callback=myMap"></script>
+
+</body>
+</html>
