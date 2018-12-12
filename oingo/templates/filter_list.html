@@ -45,23 +45,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr>
                 {% for filter in user_filter_list %}
-                    <td>{{ filter.lat }}</td>
-                    <td>{{ filter.lng }}</td>
-                    <td>{{ filter.radius }}</td>
-                    <td>{{ filter.start_time }}</td>
-                    <td>{{ filter.end_time }}</td>
-                    {% if filter.onfriend == 1 %}
-                    <td>Friends</td>
-                    {% else %}
-                    <td>Everyone</td>
-                    {% endif %}
-                    <td>{{ filter.tid.ttext }}</td>
-                    <td>{{ filter.sid.stext }}</td>
-                    <td><input class="btn btn-primary" type="submit" name="{{ filter.fid }}" value="Delete" /></td>
+                    <tr>
+                        <td>{{ filter.lat }}</td>
+                        <td>{{ filter.lng }}</td>
+                        <td>{{ filter.radius }}</td>
+                        <td>{{ filter.start_time }}</td>
+                        <td>{{ filter.end_time }}</td>
+                        {% if filter.onfriend == 1 %}
+                        <td>Friends</td>
+                        {% else %}
+                        <td>Everyone</td>
+                        {% endif %}
+                        <td>{{ filter.tid.ttext }}</td>
+                        <td>{{ filter.sid.stext }}</td>
+                        <td><input class="btn btn-primary" type="submit" name="{{ filter.fid }}" value="Delete" /></td>
+                    </tr>
                 {% endfor %}
-                </tr>
                 </tbody>
             </table>
         </form>

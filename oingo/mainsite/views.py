@@ -40,7 +40,7 @@ def register(request):
         if form.is_valid():
             if username == '':
                 err_msg_username = 'Please enter your username'
-            elif len(username) > 10:
+            elif len(username) > 20:
                 err_msg_username = 'Username too long'
             else:
                 try:
