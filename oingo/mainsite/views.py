@@ -464,26 +464,35 @@ def show_timeline_func(request, lat, lng, ctime):
                         continue
 
                 insert = False
+                totally_not_effect = True
                 for each_filter in user_filter_list:
+                    take_effect = True
                     if user_state is None and each_filter.sid_id is not None:
-                        continue
-                    if not ((user_state is not None and each_filter.sid_id is None) or (user_state is not None and each_filter.sid_id is not None and each_filter.sid_id == user_state)):
-                        continue
-                    if user_lat is not None and user_lng is not None and great_circle((user_lat, user_lng), (each_note.lat, each_note.lng)).meters > each_note.radius:
-                        continue
+                        take_effect = False
+                    if user_state is not None and each_filter.sid_id is not None and user_state != each_filter.sid_id:
+                        take_effect = False
+                    if user_lat is not None and user_lng is not None and great_circle((user_lat, user_lng), (each_filter.lat, each_filter.lng)).meters > each_filter.radius:
+                        take_effect = False
                     if not display(user_time, each_filter.starttime, each_filter.endtime, 1):
-                        continue
-                    if each_filter.onfriend and not from_friend:
-                        continue
-                    if each_filter.tid_id is not None:
-                        try:
-                            NoteTag.objects.get(nid_id=each_note.nid, tid_id=each_filter.tid_id)
-                        except NoteTag.DoesNotExist:
-                            continue
-                    insert = True
-                    break
+                        take_effect = False
 
-                if insert:
+                    if take_effect:
+                        totally_not_effect = False
+                        if each_filter.onfriend and not from_friend:
+                            continue
+                        if each_filter.tid_id is not None:
+                            try:
+                                NoteTag.objects.get(nid_id=each_note.nid, tid_id=each_filter.tid_id)
+                            except NoteTag.DoesNotExist:
+                                continue
+                        if user_lat is not None and user_lng is not None and great_circle((user_lat, user_lng), (each_note.lat, each_note.lng)).meters > each_note.radius:
+                            continue
+                        if not display(user_time, each_note.starttime, each_note.endtime, each_note.scheduletype):
+                            continue
+                        insert = True
+                        break
+                        
+                if insert or totally_not_effect:
                     note_list.append(each_note)
     return render(request, "timeline.html", {'noteList': note_list, 'user_status': user_status, 'user_username': user_username, 'user_state_text': user_state_text, 'lat': user_lat, 'lng': user_lng})
 
