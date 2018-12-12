@@ -563,6 +563,13 @@ def filter_list(request):
         return HttpResponseRedirect('/account/login/')
     if request.method == 'GET':
         user_filter_list = Filter.objects.filter(uid_id=user.id)
+        for each_filter in user_filter_list:
+            start_timestamp = each_filter.starttime.timestamp() + 5 * 60 * 60
+            end_timestamp = each_filter.endtime.timestamp() + 5 * 60 * 60
+            start_datetime = datetime.datetime.fromtimestamp(start_timestamp)
+            end_datetime = datetime.datetime.fromtimestamp(end_timestamp)
+            each_filter.start_time = start_datetime.strftime("%H:%M")
+            each_filter.end_time = end_datetime.strftime("%H:%M")
     if request.method == 'POST':
         delete_filter_id = list(request.POST.keys())[list(request.POST.values()).index('Delete')]
         try:
@@ -605,13 +612,10 @@ def filter_create(request):
         starttime = request.POST.get('startTime')
         endtime = request.POST.get('endTime')
         current_date = timezone.now().strftime("%Y-%m-%d")
-        starttime = current_date + ' ' + starttime
-        endtime = current_date + ' ' + endtime
-
-        # starttime = datetime.datetime.strptime(current_date + ' ' + starttime, "%Y-%m-%d %H:%M")
-        # endtime = datetime.datetime.strptime(current_date + ' ' + endtime, "%Y-%m-%d %H:%M")
-        # starttime = datetime.datetime.fromtimestamp(starttime.timestamp() - 5 * 60 * 60)
-        # endtime = datetime.datetime.fromtimestamp(endtime.timestamp() - 5 * 60 * 60)
+        starttime = datetime.datetime.strptime(current_date + ' ' + starttime, "%Y-%m-%d %H:%M")
+        endtime = datetime.datetime.strptime(current_date + ' ' + endtime, "%Y-%m-%d %H:%M")
+        starttime = datetime.datetime.fromtimestamp(starttime.timestamp() - 5 * 60 * 60)
+        endtime = datetime.datetime.fromtimestamp(endtime.timestamp() - 5 * 60 * 60)
 
         onfriend = int(request.POST.get('onfriend'))
         if onfriend != 0 and onfriend != 1:
