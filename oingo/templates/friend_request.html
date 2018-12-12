@@ -28,7 +28,7 @@
     <form action="/account/friend/request/" method="post">
         {% csrf_token %}
         {% for friend in requester_user_friend_list %}
-            <label>{{ friend.username }}</label>
+            <a href="/account/profile/{{ friend.username }}/">{{ friend.username }}</a>
         {% endfor %}
     </form>
 
@@ -39,7 +39,7 @@
     <form action="/account/friend/request/" method="post">
         {% csrf_token %}
         {% for friend in requestee_user_friend_list %}
-            <label>{{ friend.username }}</label>
+            <a href="/account/profile/{{ friend.username }}/">{{ friend.username }}</a>
             <input type="submit" name="{{ friend.id }}" value="Confirm" />
         {% endfor %}
     </form>

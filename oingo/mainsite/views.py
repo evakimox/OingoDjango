@@ -15,7 +15,6 @@ from geopy.distance import great_circle
 
 
 def index(request):
-    # return HttpResponse("index")
     return HttpResponseRedirect('/timeline/')
 
 
@@ -145,10 +144,10 @@ def account_profile(request, profile_username):
                 else:   # show other's profile page
                     user_self = 0
                     try:
-                        friend = Friend.objects.get(friender=user.id, friendee=profile_user.id)
+                        friend = Friend.objects.get(friender_id=user.id, friendee_id=profile_user.id)
                     except Friend.DoesNotExist:
                         try:
-                            friend = Friend.objects.get(friender=profile_user.id, friendee=user.id)
+                            friend = Friend.objects.get(friender_id=profile_user.id, friendee_id=user.id)
                         except Friend.DoesNotExist:  # doesnt have any request
                             friend_status = 0
                         else: # profile send request to user
@@ -173,14 +172,14 @@ def account_profile(request, profile_username):
                 req = request.POST.get('friend')
                 if req == 'Friend':
                     try:
-                        friend = Friend.objects.get(friender=user.id, friendee=profile_user.id)
+                        friend = Friend.objects.get(friender_id=user.id, friendee_id=profile_user.id)
                     except Friend.DoesNotExist:
                         try:
-                            friend = Friend.objects.get(friender=profile_user.id, friendee=user.id)
+                            friend = Friend.objects.get(friender_id=profile_user.id, friendee_id=user.id)
                         except Friend.DoesNotExist:  # doesnt have any request
-                            friend = Friend(friender=user.id,
-                                            friendee=profile_user.id,
-                                            comfirmed=False,
+                            friend = Friend(friender_id=user.id,
+                                            friendee_id=profile_user.id,
+                                            confirmed=False,
                                             createtime=timezone.now())
                             friend.save()
                             friend_status = 1
@@ -190,7 +189,7 @@ def account_profile(request, profile_username):
                         return HttpResponse('Already Exist friend record', status=403)
                 elif req == 'Confirm':
                     try:
-                        friend = Friend.objects.get(friender=profile_user.id, friendee=user.id)
+                        friend = Friend.objects.get(friender_id=profile_user.id, friendee_id=user.id)
                     except Friend.DoesNotExist:  # doesnt have any request
                         return HttpResponse('No request can be found', status=403)
                     friend.confirmed = True
@@ -255,7 +254,7 @@ def friend_request(request):
     if request.method == 'POST':
         friend_id = list(request.POST.keys())[list(request.POST.values()).index('Confirm')]
         try:
-            friend = Friend.objects.get(friender=friend_id, friendee=user.id)
+            friend = Friend.objects.get(friender_id=friend_id, friendee_id=user.id)
         except Friend.DoesNotExist:
             return HttpResponse('No request can be found', status=403)
         friend.confirmed = True
@@ -314,19 +313,23 @@ def submit_note(request):
         endtime = request.POST.get('endTime')
         visibleDate = request.POST.get('visibleDate')
 
-        starttime = visibleDate + ' ' + starttime
-        endtime = visibleDate + ' ' + endtime
+        starttime = datetime.datetime.strptime(visibleDate + ' ' + starttime, "%Y-%m-%d %H:%M")
+        endtime = datetime.datetime.strptime(visibleDate + ' ' + endtime, "%Y-%m-%d %H:%M")
+        starttime = datetime.datetime.fromtimestamp(starttime.timestamp() - 5 * 60 * 60)
+        endtime = datetime.datetime.fromtimestamp(endtime.timestamp() - 5 * 60 * 60)
 
         visibility = request.POST.get('visibleType')
         createtime = timezone.now()
-        myNote = Note(uid=user,
-                      ntext=noteText,
-                      lat=lat, lng=lng, radius=radius,
-                      starttime=starttime,
-                      endtime=endtime,
-                      scheduletype=1,
-                      visibility=visibility,
-                      createtime=createtime)
+        myNote = Note(
+            uid=user,
+            ntext=noteText,
+            lat=lat, lng=lng, radius=radius,
+            starttime=starttime,
+            endtime=endtime,
+            scheduletype=1,
+            visibility=visibility,
+            createtime=createtime
+        )
 
         selectedTags = request.POST.getlist("selectDefaultTags")
         myNote.save()
@@ -336,7 +339,7 @@ def submit_note(request):
                 notetag = NoteTag(nid_id=myNote.nid, tid_id=tag)
                 notetagBulk.append(notetag)
             NoteTag.objects.bulk_create(notetagBulk)
-        return HttpResponse(noteText)
+        return HttpResponseRedirect("/")
 
 
 def display(ctime, ltime, rtime, scheduletype):
@@ -517,7 +520,7 @@ def timeline_position(request, lat, lng):
             user_lat = request.session['lat']
             user_lng = request.session['lng']
         if modify_time:
-            user_time = request.session['datetime']
+            user_time = datetime.datetime.strptime(request.session['datetime'], "%Y-%m-%d %H:%M")
     record_position(request, user_lat, user_lng, user_time)
     return show_timeline_func(request, user_lat, user_lng, user_time)
 
@@ -604,6 +607,11 @@ def filter_create(request):
         current_date = timezone.now().strftime("%Y-%m-%d")
         starttime = current_date + ' ' + starttime
         endtime = current_date + ' ' + endtime
+
+        # starttime = datetime.datetime.strptime(current_date + ' ' + starttime, "%Y-%m-%d %H:%M")
+        # endtime = datetime.datetime.strptime(current_date + ' ' + endtime, "%Y-%m-%d %H:%M")
+        # starttime = datetime.datetime.fromtimestamp(starttime.timestamp() - 5 * 60 * 60)
+        # endtime = datetime.datetime.fromtimestamp(endtime.timestamp() - 5 * 60 * 60)
 
         onfriend = int(request.POST.get('onfriend'))
         if onfriend != 0 and onfriend != 1:
@@ -731,6 +739,6 @@ def backdoor_update(request):
 
             request.session['lat'] = float(lat)
             request.session['lng'] = float(lng)
-            request.session['datetime'] = datetime.datetime.strptime(str_date_time, "%Y-%m-%d %H:%M")
+            request.session['datetime'] = str_date_time
         return HttpResponseRedirect('/backdoor/')
 
