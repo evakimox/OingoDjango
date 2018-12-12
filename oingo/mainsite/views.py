@@ -387,10 +387,11 @@ def show_timeline_func(request, lat, lng, ctime):
         if str_search is not None and str_search != '':
             search = str_search
 
-    user_locations = Location.objects.filter(uid_id=user.id).order_by('-ltime')
-    if len(user_locations) > 0 and user_locations[0].sid_id is not None:
-        user_state = user_locations[0].sid_id
-        user_state_text = State.objects.get(sid=user_state).stext
+    if user is not None:
+        user_locations = Location.objects.filter(uid_id=user.id).order_by('-ltime')
+        if len(user_locations) > 0 and user_locations[0].sid_id is not None:
+            user_state = user_locations[0].sid_id
+            user_state_text = State.objects.get(sid=user_state).stext
 
     note_list = []
     if user is None:
@@ -505,8 +506,13 @@ def timeline_position(request, lat, lng):
     user_time = timezone.now()
     user = login_status(request)
     if user is not None:
-        modify_time = request.session['modifyTime']
-        modify_location = request.session['modifyLocation']
+        modify_time = False
+        if 'modifyTime' in request.session:
+            modify_time = request.session['modifyTime']
+        modify_location = False
+        if 'modifyLocation' in request.session:
+            modify_location = request.session['modifyLocation']
+
         if modify_location:
             user_lat = request.session['lat']
             user_lng = request.session['lng']

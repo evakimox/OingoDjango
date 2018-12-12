@@ -41,7 +41,7 @@
             Your are: {{ user_state_text }}
         </div>
         {% endif %}
-        
+
         <div style="padding: 10px; display: inline-block">
             <form action="/timeline/@{{ lat }},{{ lng }}/" method="post">
                 {% csrf_token %}
